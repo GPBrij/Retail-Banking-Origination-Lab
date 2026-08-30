@@ -23,6 +23,9 @@ v0.4.0  Governed referral and reviewer workflow
    |
    v
 v0.4.1  Documentation alignment for the complete v0.4 capability
+   |
+   v
+v0.5.0  Final portfolio hardening
 ```
 
 ## Two-dimensional enterprise capability map
@@ -149,3 +152,6 @@ The local API listens on `http://localhost:8090`.
 - KYC, PEP, sanctions and bureau services are mocks.
 - No authentication, authorization, concurrency control, reviewer segregation, external rule engine, messaging, observability stack or production deployment exists.
 - Reviewer names and review notes are synthetic portfolio inputs.
+## Final portfolio release
+
+Version 0.5 adds a static OpenAPI contract, standardized API errors, correlation identifiers, referral optimistic locking, an optional PostgreSQL profile and API-quality tests. See [Version 0.5](docs/VERSION-0.5.md).

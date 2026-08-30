@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0 - Final portfolio hardening
+
+- Added OpenAPI contract, standard API errors and correlation IDs.
+- Added referral optimistic locking and optional PostgreSQL profile.
+- Added API quality tests and final-release documentation.
+
 ## Two-dimensional release map
 
 ```text

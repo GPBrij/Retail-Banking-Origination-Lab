@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: Retail Banking Origination Lab API
+  version: 0.5.0
+  description: Synthetic portfolio API. Not for real banking or compliance decisions.
+servers:
+  - url: http://localhost:8090
+paths:
+  /api/v1/applications:
+    post:
+      summary: Submit a synthetic application
+      responses:
+        '201': { description: Decision created }
+        '400': { description: Validation error }
+    get:
+      summary: List active-session applications
+      responses:
+        '200': { description: Application evidence list }
+  /api/v1/applications/{applicationId}:
+    get:
+      summary: Get decision evidence
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Application evidence }
+        '404': { description: Not found }
+  /api/v1/workflow/referrals:
+    get:
+      summary: List open synthetic referrals
+      responses:
+        '200': { description: Open referral list }
+  /api/v1/workflow/referrals/{applicationId}/claim:
+    post:
+      summary: Claim a synthetic referral
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Referral claimed }
+        '404': { description: Not found }
+        '409': { description: Workflow conflict }
+  /api/v1/workflow/referrals/{applicationId}/review:
+    post:
+      summary: Complete a synthetic review
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Review completed }
+        '400': { description: Validation error }
+        '409': { description: Reviewer or state conflict }
+  /api/v1/workflow/applications/{applicationId}:
+    get:
+      summary: Get workflow history and audit events
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Workflow evidence }
+        '404': { description: Not found }
