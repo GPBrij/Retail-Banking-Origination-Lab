@@ -1,84 +1,143 @@
 # Retail Banking Origination Lab
 
-A synthetic Java/Spring Boot portfolio project modelling customer onboarding and initial decisioning for home loans, credit cards, savings accounts, and debit cards.
+A synthetic Java and Spring Boot portfolio platform demonstrating explainable retail-banking origination for home loans, credit cards, savings accounts, and debit cards.
 
-> Learning only. This is not a production lending, sanctions, KYC, AML, or credit-bureau system. It uses synthetic data and deliberately simplified rules. Do not use it to make real financial decisions.
+> **Learning boundary:** This repository is not a production lending, KYC, AML, sanctions, PEP, or credit-bureau system. It uses synthetic data, mock integrations, and laboratory rules. It must not be used for real financial decisions.
 
-## Two-dimensional architecture
+## Capability journey
 
 ```text
-                              DECISION LIFECYCLE
-                 CAPTURE   VERIFY   ASSESS   DECIDE   EVIDENCE
-PRODUCT
-Home loan          [X]       [X]      [X]      [X]       [X]
-Credit card        [X]       [X]      [X]      [X]       [X]
-Savings            [X]       [X]      [ ]      [X]       [X]
-Debit card         [X]       [X]      [ ]      [X]       [X]
-
-METAFIELDS
-Purpose  : Mock retail banking origination
-Input    : Synthetic applicant and affordability data
-Process  : Consent, bureau mock, sanctions mock, internal rules
-Decision : Approved, Refer, Declined
-Evidence : Score, disposable income, reasons
-Control  : No protected traits; human review for referrals
-Boundary : Learning and portfolio use only
+VERSION DIMENSION
+v0.1  Capture -> Verify -> Assess -> Decide -> Explain
+v0.2  Capture -> Persist -> Assess -> Persist Decision -> Retrieve Evidence
+v0.3  Planned: Product-specific policy strategies
+v0.4  Planned: Governed onboarding and referral workflow
+v1.0  Planned: Integrated portfolio baseline
 ```
 
-## Flow
+## Two-dimensional capability map
+
+```text
+                                      DECISION LIFECYCLE
+                           CAPTURE  VERIFY  ASSESS  DECIDE  EVIDENCE
+PRODUCT DIMENSION
+Home loan                    [X]      [X]     [X]     [X]      [X]
+Credit card                  [X]      [X]     [X]     [X]      [X]
+Savings account              [X]      [X]     [ ]     [X]      [X]
+Debit card                   [X]      [X]     [ ]     [X]      [X]
+
+VERSION DIMENSION
+v0.1 Decision logic           [X]      [X]     [X]     [X]      [X]
+v0.2 Persistence             [X]      [X]     [X]     [X]      [X]
+v0.3 Product policy          [ ]      [ ]     [ ]     [ ]      [ ]
+v0.4 Workflow governance     [ ]      [ ]     [ ]     [ ]      [ ]
+
+METAFIELDS
+Purpose      : Synthetic retail-banking origination learning platform
+Input        : Synthetic applicant, product, consent, and affordability data
+Process      : Validation, mock screening, rule evaluation, persistence
+Decision     : APPROVED, REFER, or DECLINED
+Evidence     : Score, sanctions indicator, disposable income, reason codes
+Traceability : Application ID, rule-set version, created and decision timestamps
+Control      : Protected traits excluded; referrals support human review
+Boundary     : Portfolio and learning use only
+```
+
+## Version 0.1
+
+Version 0.1 introduced the runnable decision engine:
+
+- Four product identifiers
+- REST application submission
+- Explicit mock bureau-consent validation
+- Deterministic synthetic bureau scoring
+- Synthetic sanctions screening
+- Disposable-income calculation
+- Explainable `APPROVED`, `REFER`, and `DECLINED` results
+- Decision reason codes
+
+## Version 0.2
+
+Version 0.2 added persistent decision evidence during the active H2 session:
+
+- `ApplicationEntity` and `DecisionEntity`
+- Spring Data JPA repositories
+- Rule-set version `0.2.0`
+- Application and decision timestamps
+- Retrieve one application and its decision
+- List stored applications
+- Automated persistence-flow test
+
+> H2 remains in memory. Data is removed when the application stops.
+
+## Architecture flow
 
 ```mermaid
 flowchart LR
- A[Application] --> B[Consent validation]
- B --> C[Mock credit bureau]
- B --> D[Mock sanctions screening]
- C --> E[Internal rule lab]
- D --> E
- E --> F{Decision}
- F --> G[Approved]
- F --> H[Refer for human review]
- F --> I[Declined for synthetic sanctions match]
+    A[Synthetic application] --> B[Validation and consent]
+    B --> C[Persist application]
+    C --> D[Mock bureau]
+    C --> E[Mock sanctions]
+    D --> F[Internal rule lab]
+    E --> F
+    F --> G{Decision}
+    G --> H[APPROVED]
+    G --> I[REFER]
+    G --> J[DECLINED]
+    H --> K[Persist evidence]
+    I --> K
+    J --> K
+    K --> L[History API]
 ```
 
-## Run
+## Technology stack
+
+- Java 21
+- Spring Boot 4.1.1
+- Spring Web and Jakarta Validation
+- Spring Data JPA and Hibernate
+- H2 in-memory database
+- Maven and JUnit
+
+## API endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/api/v1/applications` | Submit a synthetic application and decision it |
+| `GET` | `/api/v1/applications/{applicationId}` | Retrieve one application and its decision evidence |
+| `GET` | `/api/v1/applications` | List applications stored in the active session |
+
+See [API documentation](docs/API.md) for request and response fields.
+
+## Run locally
 
 ```powershell
 mvn clean test
 mvn spring-boot:run
 ```
 
-## Example request
+The API listens on `http://localhost:8090`.
 
-```powershell
-$Body = @{
- applicantRef = "SYNTH-1001"
- productType = "CREDIT_CARD"
- monthlyIncome = 45000
- monthlyExpenses = 18000
- existingDebt = 5000
- requestedAmount = 75000
- creditBureauConsent = $true
- fullName = "DEMO CUSTOMER"
- countryCode = "ZA"
-} | ConvertTo-Json
+## Documentation map
 
-Invoke-RestMethod -Method Post -Uri "http://localhost:8090/api/v1/applications" -ContentType "application/json" -Body $Body
-```
+- [Architecture and two-dimensional system view](docs/ARCHITECTURE.md)
+- [API and data-contract view](docs/API.md)
+- [Governance and control view](docs/GOVERNANCE.md)
+- [Version 0.1 baseline](docs/VERSION-0.1.md)
+- [Version 0.2 increment](docs/VERSION-0.2.md)
+- [Test evidence](docs/TEST-EVIDENCE.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Changelog](CHANGELOG.md)
+- [Security policy](SECURITY.md)
 
-## Planned modules
+## Responsible-use guardrails
 
-1. Customer/KYC onboarding
-2. Product eligibility by product type
-3. Mock bureau and take-up simulation
-4. Synthetic sanctions and PEP screening
-5. Internal credit rule lab with versioned rules
-6. Decision explainability and manual referral
-7. Audit trail and consent evidence
-8. PostgreSQL profile, Docker, OpenAPI and tests
+- No real customer, bureau, sanctions, PEP, or production data is included.
+- Protected characteristics are not used in scoring.
+- Laboratory decisions are synthetic, explainable, and contestable.
+- Ambiguous non-sanctions outcomes are referred for human review.
+- Build output under `target/` is excluded from Git.
 
-## Fairness guardrails
+## License
 
-- Do not use age, race, gender, religion, disability, location proxies, or other protected attributes in scoring.
-- Keep the scoring rules synthetic and explainable.
-- Route ambiguous outcomes to human review.
-- Record rule version and reason codes.
+MIT License. See [LICENSE](LICENSE).

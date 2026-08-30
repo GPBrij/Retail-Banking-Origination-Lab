@@ -1,29 +1,37 @@
-﻿# Version 0.2 - Persistent Decision Evidence
+# Version 0.2 Persistent Decision Evidence
 
-## Capability increment
+## Two-dimensional increment view
 
 ```text
-APPLICATION
-    |
-    +--> persist applicant and product data
-    +--> execute mock bureau and sanctions checks
-    +--> apply internal rule set 0.2.0
-    +--> persist decision evidence
-    +--> retrieve application history
+                                  EVIDENCE LIFECYCLE
+CAPABILITY DIMENSION       CREATE  STORE  VERSION  RETRIEVE  LIST
+Application                  [X]    [X]      [ ]       [X]     [X]
+Decision                     [X]    [X]      [X]       [X]     [X]
+Reason codes                 [X]    [X]      [X]       [X]     [X]
+Timestamps                   [X]    [X]      [ ]       [X]     [X]
+Rule-set version             [X]    [X]      [X]       [X]     [X]
+
+METAFIELDS
+Release     : v0.2.0
+Increment   : Persistence and retrieval
+Database    : H2 in memory
+Rule version: 0.2.0
+New routes  : GET one and GET all
+Test        : PersistenceFlowTests
+Durability  : Active-process lifetime only
+Boundary    : No production persistence claim
 ```
 
-## New endpoints
+## Added components
 
-- `GET /api/v1/applications`
-- `GET /api/v1/applications/{applicationId}`
+- `ApplicationEntity`
+- `DecisionEntity`
+- `ApplicationRepository`
+- `DecisionRepository`
+- `ApplicationHistoryResponse`
+- `ApiExceptionHandler`
+- `PersistenceFlowTests`
 
-## New evidence fields
+## Demonstrated retrieval
 
-- Application creation timestamp
-- Decision timestamp
-- Rule-set version
-- Status, score, sanctions indicator, disposable income, and reasons
-
-## Limitation
-
-H2 remains in-memory, so data is retained only while the application process is running.
+The runtime test created an application, retrieved it by identifier, and listed it through the collection endpoint with rule-set version and timestamps.
