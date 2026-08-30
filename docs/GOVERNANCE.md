@@ -3,49 +3,43 @@
 ## Two-dimensional control map
 
 ```text
-                                      CONTROL OUTCOME
-CONTROL DIMENSION           PREVENT  DETECT  EXPLAIN  EVIDENCE  OVERSIGHT
-Synthetic-data boundary       [X]      [X]      [X]      [X]       [X]
-Bureau-consent gate           [X]      [ ]      [X]      [X]       [ ]
-Protected-trait exclusion     [X]      [ ]      [X]      [ ]       [X]
-Reason codes                  [ ]      [X]      [X]      [X]       [X]
-Rule-set version              [ ]      [X]      [X]      [X]       [X]
-Timestamps                    [ ]      [X]      [ ]      [X]       [X]
-Referral outcome              [ ]      [X]      [X]      [X]       [X]
+                                         CONTROL OUTCOME
+CONTROL DIMENSION              PREVENT  DETECT  EXPLAIN  EVIDENCE  OVERSIGHT  ACCOUNTABILITY
+Synthetic-data boundary         [X]      [X]      [X]      [X]       [X]          [X]
+Consent gate                    [X]      [ ]      [X]      [X]       [ ]          [X]
+Product-policy separation       [X]      [X]      [X]      [X]       [X]          [X]
+KYC/PEP review state            [ ]      [X]      [X]      [X]       [X]          [X]
+Referral queue                  [ ]      [X]      [X]      [X]       [X]          [X]
+Reviewer claim                  [X]      [X]      [X]      [X]       [X]          [X]
+Status history                  [ ]      [X]      [X]      [X]       [X]          [X]
+Audit events                    [ ]      [X]      [X]      [X]       [X]          [X]
 
 METAFIELDS
-Objective    : Demonstrate governance embedded in software design
-Owner        : Repository maintainer
-Subjects     : Synthetic applicants only
-Decision use : Learning and portfolio demonstration only
-Explainability: Status plus reason codes
-Traceability : Application ID, rule version, timestamps
-Oversight    : REFER represents a human-review boundary
-Prohibition  : No real customer, lending, pricing, or screening use
+Objective      : Embed governance controls in a synthetic software workflow
+Decision owner : SYSTEM initially; synthetic reviewer for referrals
+Human oversight: Claim and review path for REFER decisions
+Explainability : Product and screening reason codes
+Traceability   : Application ID, actor, source, status and timestamps
+Data class     : Synthetic portfolio data
+Prohibition    : No real banking, compliance, pricing or eligibility use
 ```
 
-## Governance principles
+## Control interpretation
 
-### Purpose limitation
+- **Referral queue:** separates automated decisions from cases requiring synthetic human oversight.
+- **Claim control:** establishes reviewer ownership before a review outcome can be submitted.
+- **Status history:** records lifecycle transitions independently from the current application status.
+- **KYC and PEP states:** demonstrate screening-state orchestration without connecting to real screening sources.
+- **Audit events:** provide event type, actor, detail and timestamp for key workflow actions.
+- **Product policies:** prevent one undifferentiated rule set from governing unlike products.
 
-The platform exists solely as a synthetic learning and portfolio environment.
+## Recommendations
 
-### Fairness boundary
+- Introduce authenticated identities and role-based access before treating reviewer ownership as a security control.
+- Add separation-of-duty rules between claim, review and policy administration.
+- Add optimistic locking and idempotency to protect workflow integrity.
+- Define retention, masking and deletion policies before durable personal-data storage.
+- Version screening logic and product policies independently.
+- Add an appeal or reconsideration lifecycle only as a synthetic governance demonstration.
 
-Race, religion, gender, disability, sexual orientation, age, ethnicity, and neighbourhood or location proxies must not be added to scoring.
-
-### Explainability
-
-Every non-approved result exposes laboratory reason codes. A synthetic sanctions match takes the `DECLINED` path; other rule failures take the `REFER` path.
-
-### Traceability
-
-Version 0.2 stores the application identifier, application timestamp, decision timestamp, rule-set version, status, score, match indicator, disposable income, and reason codes.
-
-### Human oversight
-
-`REFER` is a workflow boundary for future human review. Version 0.2 does not yet implement the review queue.
-
-## Prohibited use
-
-Do not use this repository for real credit decisions, pricing, affordability, account opening, KYC, AML, sanctions, PEP, customer eligibility, or operational banking processing.
+These are recommendations for future versions and are not implemented in v0.4.

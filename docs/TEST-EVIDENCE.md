@@ -1,53 +1,44 @@
 # Test Evidence
 
-## Two-dimensional verification view
+## Two-dimensional verification map
 
 ```text
-                                      TEST LAYER
-SCENARIO DIMENSION          BUILD  CONTEXT  POST  GET ONE  GET ALL  EVIDENCE
-Version 0.1 referral         [X]     [X]     [X]    [ ]      [ ]      [X]
-Version 0.1 approval         [X]     [X]     [X]    [ ]      [ ]      [X]
-Version 0.1 decline          [X]     [X]     [X]    [ ]      [ ]      [X]
-Version 0.2 persistence      [X]     [X]     [X]    [X]      [X]      [X]
+                                          TEST DIMENSION
+CAPABILITY DIMENSION              CONTEXT  UNIT  INTEGRATION  RUNTIME  EVIDENCE
+Application startup                 [X]     [ ]      [X]        [X]      [X]
+Product policies                    [ ]     [X]      [ ]        [X]      [X]
+Persistence                         [ ]     [ ]      [X]        [X]      [X]
+Referral and reviewer workflow      [ ]     [ ]      [X]        [ ]      [X]
+Status history and audit events     [ ]     [ ]      [X]        [ ]      [X]
 
 METAFIELDS
-Runtime     : Java 21 and Spring Boot
 Build       : Maven clean test
-Automated   : Context test and persistence-flow test
-Manual      : POST, GET by identifier, GET collection
-Data        : Synthetic only
-Evidence    : Console output and response fields
-Limitation  : No load, security, mutation, or concurrency testing yet
+Runtime     : Java 21 and Spring Boot
+Automated   : Context, persistence, policy and workflow tests
+Current total: 7 tests
+Result      : 7 passed, 0 failures, 0 errors
+Limitation  : Complete manual v0.4 API transcript not yet captured
+Boundary    : Synthetic test cases only
 ```
 
-## Automated result
+## Latest automated result
 
 ```text
-Tests run: 2
+Tests run: 7
 Failures: 0
 Errors: 0
 Skipped: 0
 BUILD SUCCESS
 ```
 
-## Version 0.1 manual evidence
+## Proven automated workflow
 
-| Scenario | Status | Score | Sanctions | Disposable income | Reasons |
-|---|---:|---:|---:|---:|---|
-| Low synthetic bureau score | REFER | 546 | false | 22000 | BUREAU_SCORE_BELOW_LAB_THRESHOLD |
-| Threshold met | APPROVED | 580 | false | 22000 | None |
-| Synthetic sanctions match | DECLINED | 538 | true | 13000 | SYNTHETIC_SANCTIONS_MATCH; BUREAU_SCORE_BELOW_LAB_THRESHOLD |
+The workflow test creates a referred synthetic application, claims the referral, approves the review, verifies the final application status, and confirms status-history and audit-event evidence.
 
-## Version 0.2 manual evidence
+## Earlier runtime evidence
 
-```text
-applicantRef     : SYNTH-V02-1001
-productType      : CREDIT_CARD
-status           : APPROVED
-bureauScore      : 641
-sanctionsMatch   : False
-disposableIncome : 22000
-ruleSetVersion   : 0.2.0
-```
+Version 0.3 manually demonstrated successful home-loan, credit-card, savings-account and debit-card requests. Version 0.2 manually demonstrated application creation, retrieval by identifier and collection retrieval.
 
-The application identifier and timestamps are generated at runtime and therefore vary by execution.
+## Recommendation
+
+Capture a manual v0.4 API run showing KYC referral creation, referral listing, claim, review and workflow evidence. Add only synthetic identifiers and omit local machine paths.

@@ -1,85 +1,59 @@
 # Architecture
 
-## Purpose
-
-This document describes the implemented Version 0.1 and Version 0.2 architecture without presenting the laboratory as a production banking platform.
-
-## Two-dimensional component map
+## Two-dimensional component view
 
 ```text
-                                      ARCHITECTURE LAYER
-COMPONENT DIMENSION          API  SERVICE  RULES  INTEGRATION  DATA  EVIDENCE
-OriginationController        [X]    [ ]     [ ]      [ ]       [ ]     [ ]
-OriginationService           [ ]    [X]     [ ]      [ ]       [ ]     [X]
-InternalCreditRules          [ ]    [ ]     [X]      [ ]       [ ]     [X]
-MockCreditBureauClient       [ ]    [ ]     [ ]      [X]       [ ]     [X]
-MockSanctionsClient          [ ]    [ ]     [ ]      [X]       [ ]     [X]
-ApplicationEntity            [ ]    [ ]     [ ]      [ ]       [X]     [X]
-DecisionEntity               [ ]    [ ]     [ ]      [ ]       [X]     [X]
-Repositories                 [ ]    [ ]     [ ]      [ ]       [X]     [ ]
+                                           ARCHITECTURE DIMENSION
+COMPONENT DIMENSION             API  ORCHESTRATION  POLICY  SCREENING  DATA  WORKFLOW  EVIDENCE
+OriginationController           [X]       [ ]        [ ]      [ ]      [ ]     [ ]       [ ]
+WorkflowController              [X]       [ ]        [ ]      [ ]      [ ]     [X]       [X]
+OriginationService              [ ]       [X]        [X]      [X]      [X]     [X]       [X]
+WorkflowService                 [ ]       [X]        [ ]      [ ]      [X]     [X]       [X]
+ProductPolicyFactory            [ ]       [ ]        [X]      [ ]      [ ]     [ ]       [ ]
+Product policies                [ ]       [ ]        [X]      [ ]      [ ]     [ ]       [X]
+Mock screening clients          [ ]       [ ]        [ ]      [X]      [ ]     [ ]       [X]
+JPA entities/repositories       [ ]       [ ]        [ ]      [ ]      [X]     [X]       [X]
 
 METAFIELDS
-Style       : Layered Spring Boot application
-Pattern     : Controller, service, mock adapter, rules, repository
-Input       : Validated synthetic application request
-Orchestrator: OriginationService
-State       : H2 in-memory persistence
-Output      : Explainable decision and retrieval view
-Trust       : Caller -> API -> mocks/rules -> persistence -> response
-Boundary    : No production integration or operational decisioning
+Style       : Layered modular monolith
+Patterns    : Strategy, factory, service and repository
+Entry points: OriginationController and WorkflowController
+State       : H2 in-memory relational persistence
+Business flow: OriginationService and WorkflowService
+Evidence    : Decisions, referrals, status history and audit events
+Boundary    : Synthetic portfolio architecture only
 ```
 
-## System context
+## Logical architecture
 
 ```text
-[Synthetic caller]
-        |
-        v
-[Origination REST API]
-        |
-        +--> [Validation and consent]
-        |
-        +--> [Application persistence]
-        |
-        +--> [Mock credit bureau]
-        |
-        +--> [Mock sanctions screening]
-        |
-        +--> [Internal credit rules]
-        |
-        +--> [Decision persistence]
-        |
-        v
-[Explainable response and history retrieval]
+CALLER
+  |
+  +--> ORIGINATION API
+  |       |
+  |       +--> APPLICATION PERSISTENCE
+  |       +--> SYNTHETIC SCREENING
+  |       +--> PRODUCT POLICY FACTORY
+  |       +--> DECISION PERSISTENCE
+  |       +--> REFERRAL CREATION
+  |
+  +--> WORKFLOW API
+          |
+          +--> OPEN REFERRALS
+          +--> CLAIM OWNERSHIP
+          +--> REVIEW OUTCOME
+          +--> STATUS HISTORY
+          +--> AUDIT EVENTS
 ```
 
-## Version evolution
+## Recommendations
 
-```text
-v0.1
-Request -> Validate -> Screen -> Assess -> Decide -> Respond
+1. **Persistent database profile:** add PostgreSQL and schema migrations so evidence survives restarts.
+2. **Security boundary:** add authentication and role-based authorization before exposing reviewer endpoints.
+3. **Workflow concurrency:** use entity versions or locking to prevent two reviewers claiming the same referral.
+4. **Externalised policy:** separate laboratory thresholds from Java source and version policy configuration.
+5. **Observability:** add correlation identifiers, structured logs and metrics without logging personal data.
+6. **API contract:** add OpenAPI documentation and standardized validation/conflict responses.
+7. **Portfolio boundary:** retain synthetic naming and never add real customer or screening datasets.
 
-v0.2
-Request -> Validate -> Persist Application -> Screen -> Assess
-        -> Decide -> Persist Decision -> Retrieve Evidence
-```
-
-## Components
-
-| Component | Responsibility | Version |
-|---|---|---|
-| `OriginationController` | POST and GET API routes | v0.1, expanded v0.2 |
-| `OriginationService` | Orchestration and decision persistence | v0.1, expanded v0.2 |
-| `InternalCreditRules` | Laboratory reason-code evaluation | v0.1 |
-| `MockCreditBureauClient` | Deterministic synthetic score | v0.1 |
-| `MockSanctionsClient` | Synthetic name matching | v0.1 |
-| `ApplicationEntity` | Persist application evidence | v0.2 |
-| `DecisionEntity` | Persist decision evidence | v0.2 |
-| Repositories | H2 data access | v0.2 |
-
-## Limitations
-
-- H2 data exists only while the application is running.
-- Product-specific policy strategies are not yet implemented.
-- There is no authentication, role model, workflow queue, real KYC, real bureau, real sanctions, or PEP integration.
-- Rules remain compiled in Java and are not externally managed.
+These are recommended future enhancements, not capabilities claimed by v0.4.

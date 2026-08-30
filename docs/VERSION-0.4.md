@@ -1,31 +1,41 @@
 # Version 0.4 - Governed Reviewer Workflow
 
+## Two-dimensional implementation map
+
 ```text
                                    CONTROL LIFECYCLE
-CAPABILITY DIMENSION     CAPTURE  SCREEN  REFER  CLAIM  REVIEW  AUDIT
-KYC state                  [X]      [X]     [X]    [ ]     [X]    [X]
-PEP state                  [X]      [X]     [X]    [ ]     [X]    [X]
-Referral queue             [ ]      [ ]     [X]    [X]     [X]    [X]
-Status history             [X]      [X]     [X]    [X]     [X]    [X]
-Reviewer workflow          [ ]      [ ]     [ ]    [X]     [X]    [X]
-Audit events               [X]      [X]     [X]    [X]     [X]    [X]
+CAPABILITY DIMENSION     CAPTURE  SCREEN  REFER  CLAIM  REVIEW  HISTORY  AUDIT
+KYC state                  [X]      [X]     [X]    [ ]     [X]      [X]    [X]
+PEP state                  [X]      [X]     [X]    [ ]     [X]      [X]    [X]
+Referral queue             [ ]      [ ]     [X]    [X]     [X]      [X]    [X]
+Reviewer workflow          [ ]      [ ]     [ ]    [X]     [X]      [X]    [X]
+Application state          [X]      [X]     [X]    [X]     [X]      [X]    [X]
+Audit events               [ ]      [X]     [X]    [X]     [X]      [ ]    [X]
 
 METAFIELDS
-Release     : v0.4.0
-Purpose     : Synthetic governed onboarding and human-review workflow
-States      : Application, KYC, PEP, referral and review states
-Queue       : Open synthetic referrals
-Reviewer    : Claim then approve or decline
-Evidence    : Status history and audit events
-Rule version: 0.4.0
-Boundary    : No real KYC, PEP, sanctions or banking decision use
+Release      : v0.4.0
+Purpose      : Synthetic governed onboarding and reviewer workflow
+New entities : Referral, StatusHistory and AuditEvent
+New service  : WorkflowService
+New API      : WorkflowController
+Screening    : MockKycPepService
+Test         : WorkflowTests
+Rule version : 0.4.0
+Boundary     : No real KYC, PEP, reviewer or banking-decision use
 ```
 
-## New endpoints
+## Implemented states
 
-- `GET /api/v1/workflow/referrals`
-- `POST /api/v1/workflow/referrals/{applicationId}/claim`
-- `POST /api/v1/workflow/referrals/{applicationId}/review`
-- `GET /api/v1/workflow/applications/{applicationId}`
+- Application: `RECEIVED`, `SCREENING`, `DECISIONED`, `REFERRED`, `UNDER_REVIEW`, `APPROVED`, `DECLINED`
+- KYC: `NOT_STARTED`, `SYNTHETIC_CLEAR`, `SYNTHETIC_REVIEW`
+- PEP: `NOT_SCREENED`, `SYNTHETIC_NO_MATCH`, `SYNTHETIC_POTENTIAL_MATCH`
+- Referral: `OPEN`, `CLAIMED`, `APPROVED`, `DECLINED`
+- Review outcome: `APPROVE`, `DECLINE`
 
-All screening indicators and reviewer identities are synthetic portfolio data.
+## Implemented workflow
+
+A reason from product rules, synthetic KYC review, or synthetic PEP review produces `REFER`. A referral is opened, then claimed by a synthetic reviewer. The same reviewer can approve or decline the referral. Status transitions and audit events are persisted for the active H2 session.
+
+## Validation
+
+The v0.4 release passed seven automated tests with zero failures and zero errors. The new workflow test validated create, claim, review, final status, history and audit evidence.

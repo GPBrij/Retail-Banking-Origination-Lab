@@ -3,40 +3,51 @@
 ## Two-dimensional release map
 
 ```text
-                         CAPABILITY DIMENSION
-VERSION          DECISION  PERSISTENCE  TRACEABILITY  POLICY  WORKFLOW
-v0.1.0              [X]        [ ]          [X]         [ ]      [ ]
-v0.2.0              [X]        [X]          [X]         [ ]      [ ]
-v0.2.1 docs         [X]        [X]          [X]         [ ]      [ ]
-v0.3.0 planned      [X]        [X]          [X]         [X]      [ ]
-v0.4.0 planned      [X]        [X]          [X]         [X]      [X]
+                              CAPABILITY DIMENSION
+VERSION       DECISION  DATA  POLICY  SCREENING  REFERRAL  REVIEW  AUDIT  DOCS
+v0.1.0           [X]     [ ]    [ ]       [X]       [ ]      [ ]    [ ]    [X]
+v0.2.0           [X]     [X]    [ ]       [X]       [ ]      [ ]    [X]    [X]
+v0.2.1           [X]     [X]    [ ]       [X]       [ ]      [ ]    [X]    [X]
+v0.3.0           [X]     [X]    [X]       [X]       [ ]      [ ]    [X]    [X]
+v0.4.0           [X]     [X]    [X]       [X]       [X]      [X]    [X]    [X]
+v0.4.1           [X]     [X]    [X]       [X]       [X]      [X]    [X]    [X]
 
 METAFIELDS
 Artifact : Release history
-Control  : Git commit and annotated version tag
-Evidence : Source changes, tests, and documentation
-Boundary : Describes implemented or explicitly planned capability only
+Control  : Test-gated commits and annotated Git tags
+Evidence : Code, tests, API results and documents
+Boundary : Implemented capability is separated from planned capability
 ```
+
+## v0.4.1 - Documentation alignment
+
+- Updated all portfolio documents for the complete v0.4 workflow.
+- Added referral, screening, reviewer, status-history and audit-event documentation.
+- Added `WORKFLOW.md` and expanded API examples.
+- Clarified limitations and future recommendations.
+
+## v0.4.0 - Governed reviewer workflow
+
+- Added synthetic KYC and PEP states.
+- Added application lifecycle states and status history.
+- Added referral entity, queue and claim processing.
+- Added reviewer approval and decline workflow.
+- Added timestamped audit events.
+- Added workflow APIs, workflow view and automated workflow test.
+
+## v0.3.0 - Product Policy Strategy Pattern
+
+- Added four product-policy strategies and factory resolution.
+- Added product-specific reason codes and policy tests.
 
 ## v0.2.1 - Documentation refresh
 
-- Refreshed README for Versions 0.1 and 0.2.
-- Added architecture, API, governance, test-evidence, and roadmap documents.
-- Added two-dimensional dimension and metafield views to every document.
-- Clarified H2 in-memory persistence and responsible-use boundaries.
+- Added architecture, API, governance, roadmap, test evidence, security and version documents.
 
 ## v0.2.0 - Persistent decision evidence
 
-- Added application and decision persistence.
-- Added application and decision repositories.
-- Added rule-set version and timestamps.
-- Added single-record and list retrieval endpoints.
-- Added persistence-flow test.
+- Added application and decision persistence, rule version, timestamps and retrieval APIs.
 
 ## v0.1.0 - Explainable decision engine
 
-- Added four synthetic product identifiers.
-- Added origination REST endpoint.
-- Added mock credit-bureau scoring and sanctions screening.
-- Added affordability calculation and internal laboratory rules.
-- Added explainable approval, referral, and decline outcomes.
+- Added four products, mock screening, affordability and explainable decisions.

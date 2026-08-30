@@ -1,97 +1,92 @@
 # API Documentation
 
-## Two-dimensional contract map
+## Two-dimensional API map
 
 ```text
-                                   API OPERATION
-DATA DIMENSION             POST APPLICATION  GET ONE  GET ALL  EVIDENCE
-Application identifier            [X]           [X]      [X]      [X]
-Applicant reference               [X]           [X]      [X]      [X]
-Product type                      [X]           [X]      [X]      [X]
-Affordability input               [X]           [ ]      [ ]      [ ]
-Bureau consent                    [X]           [ ]      [ ]      [X]
-Decision status                   [ ]           [X]      [X]      [X]
-Bureau score                      [ ]           [X]      [X]      [X]
-Sanctions indicator               [ ]           [X]      [X]      [X]
-Reason codes                      [ ]           [X]      [X]      [X]
-Rule-set version                  [ ]           [X]      [X]      [X]
-Timestamps                        [ ]           [X]      [X]      [X]
+                                     API OPERATION
+RESOURCE DIMENSION          CREATE  GET ONE  LIST  CLAIM  REVIEW  HISTORY  AUDIT
+Application                   [X]      [X]    [X]    [ ]    [ ]      [X]     [X]
+Referral                      [X]      [ ]    [X]    [X]    [X]      [X]     [X]
+KYC/PEP state                 [X]      [X]    [ ]    [ ]    [ ]      [X]     [X]
+Reviewer                      [ ]      [ ]    [ ]    [X]    [X]      [X]     [X]
 
 METAFIELDS
 Base URL    : http://localhost:8090
 Media type  : application/json
 Validation  : Jakarta Bean Validation
-Identifier  : Generated UUID string
-Errors      : Validation response or 404 error map
-Persistence : H2 in-memory for active process only
-Boundary    : Synthetic requests only
+Identifiers : UUID strings
+Persistence : Active H2 process only
+Actors      : SYSTEM or synthetic reviewer text
+Boundary    : Synthetic API inputs only
 ```
 
-## Submit an application
+## Origination
+
+### Submit application
 
 `POST /api/v1/applications`
 
-### Request
-
 ```json
 {
-  "applicantRef": "SYNTH-V02-1001",
-  "productType": "CREDIT_CARD",
+  "applicantRef": "SYNTH-V04-KYC-001",
+  "productType": "SAVINGS_ACCOUNT",
   "monthlyIncome": 45000,
   "monthlyExpenses": 18000,
   "existingDebt": 5000,
-  "requestedAmount": 75000,
+  "requestedAmount": 0,
   "creditBureauConsent": true,
-  "fullName": "DEMO CUSTOMER",
+  "fullName": "KYC REVIEW CUSTOMER",
   "countryCode": "ZA"
 }
 ```
 
-### Response fields
+Synthetic markers:
 
-| Field | Meaning |
-|---|---|
-| `applicationId` | Generated correlation identifier |
-| `status` | `APPROVED`, `REFER`, or `DECLINED` |
-| `bureauScore` | Deterministic synthetic score |
-| `sanctionsMatch` | Synthetic match result |
-| `disposableIncome` | Income minus expenses and existing debt |
-| `reasons` | Explainable laboratory reason codes |
+- `KYC REVIEW` produces `SYNTHETIC_REVIEW`.
+- `PEP REVIEW` produces `SYNTHETIC_POTENTIAL_MATCH`.
+- `TEST BLOCKED PERSON` produces the synthetic sanctions-match path.
 
-## Retrieve one application
+### Retrieve evidence
 
-`GET /api/v1/applications/{applicationId}`
+- `GET /api/v1/applications/{applicationId}`
+- `GET /api/v1/applications`
 
-The response adds `applicantRef`, `productType`, `ruleSetVersion`, `createdAt`, and `decidedAt` to the decision evidence.
+## Referral workflow
 
-## List applications
+### List open referrals
 
-`GET /api/v1/applications`
+`GET /api/v1/workflow/referrals`
 
-Returns applications stored during the active H2 session.
+### Claim referral
 
-## PowerShell example
+`POST /api/v1/workflow/referrals/{applicationId}/claim`
 
-```powershell
-$Body = @{
-    applicantRef        = "SYNTH-V02-1001"
-    productType         = "CREDIT_CARD"
-    monthlyIncome       = 45000
-    monthlyExpenses     = 18000
-    existingDebt        = 5000
-    requestedAmount     = 75000
-    creditBureauConsent = $true
-    fullName            = "DEMO CUSTOMER"
-    countryCode         = "ZA"
-} | ConvertTo-Json
-
-$Decision = Invoke-RestMethod `
-    -Method Post `
-    -Uri "http://localhost:8090/api/v1/applications" `
-    -ContentType "application/json" `
-    -Body $Body
-
-Invoke-RestMethod `
-    -Method Get `
-    -Uri "http://localhost:8090/api/v1/applications/$($Decision.applicationId)"
+```json
+{
+  "reviewer": "SYNTHETIC_REVIEWER"
+}
 ```
+
+### Complete review
+
+`POST /api/v1/workflow/referrals/{applicationId}/review`
+
+```json
+{
+  "reviewer": "SYNTHETIC_REVIEWER",
+  "outcome": "APPROVE",
+  "note": "Synthetic review completed"
+}
+```
+
+`outcome` is `APPROVE` or `DECLINE`. The reviewer value must match the reviewer that claimed the referral.
+
+### Retrieve workflow evidence
+
+`GET /api/v1/workflow/applications/{applicationId}`
+
+Returns current application, KYC, PEP and referral states plus reviewer, status history and audit events.
+
+## Current error behavior
+
+A missing application or referral is mapped to a `404` response by the existing advice. A reviewer mismatch raises an illegal-state error; a standardized conflict response is recommended for a later release.
