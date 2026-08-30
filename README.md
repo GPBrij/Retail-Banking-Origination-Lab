@@ -133,19 +133,20 @@ The local API listens on `http://localhost:8090`.
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [API](docs/API.md)
-- [Governance](docs/GOVERNANCE.md)
-- [Workflow](docs/WORKFLOW.md)
-- [Test evidence](docs/TEST-EVIDENCE.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Version 0.1](docs/VERSION-0.1.md)
-- [Version 0.2](docs/VERSION-0.2.md)
-- [Version 0.3](docs/VERSION-0.3.md)
-- [Version 0.4](docs/VERSION-0.4.md)
+- docs/ARCHITECTURE.md
+- docs/API.md
+- [Openopenapi.yaml
+- [Governance](docs/
+- docs/WORKFLOW.md
+- [TestTEST-EVIDENCE.md
+- [RoadROADMAP.md
+- docs/VERSION-0.1.md
+- docs/VERSION-0.2.md
+- [VersionSION-0.3.md
+- docs/VERSION-0.4.md
+- docs/VERSION-0.5.md
 - [Changelog](CHANGELOG.md)
 - [Security](SECURITY.md)
-
 ## Current limitations
 
 - H2 data is removed when the application stops.
