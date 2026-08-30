@@ -1,0 +1,7 @@
+package za.co.gpbrij.origination;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.boot.test.context.SpringBootTest;
+import za.co.gpbrij.origination.api.*;import za.co.gpbrij.origination.domain.ProductType;import za.co.gpbrij.origination.service.*;import za.co.gpbrij.origination.workflow.*;import java.math.BigDecimal;import static org.assertj.core.api.Assertions.assertThat;
+@SpringBootTest class WorkflowTests {
+ @Autowired OriginationService origination;@Autowired WorkflowService workflow;
+ @Test void createsClaimsAndResolvesReferral(){var r=new ApplicationRequest("SYNTH-V04",ProductType.SAVINGS_ACCOUNT,new BigDecimal("45000"),new BigDecimal("18000"),new BigDecimal("5000"),BigDecimal.ONE,true,"KYC REVIEW CUSTOMER","ZA");var d=origination.assess(r);assertThat(d.status()).isEqualTo(za.co.gpbrij.origination.domain.DecisionStatus.REFER);workflow.claim(d.applicationId(),"SYNTHETIC_REVIEWER");workflow.review(d.applicationId(),new ReviewRequest("SYNTHETIC_REVIEWER",ReviewOutcome.APPROVE,"Synthetic review completed"));var v=workflow.view(d.applicationId());assertThat(v.status()).isEqualTo(ApplicationStatus.APPROVED);assertThat(v.auditEvents()).isNotEmpty();assertThat(v.statusHistory()).isNotEmpty();}
+}

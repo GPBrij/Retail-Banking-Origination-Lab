@@ -14,6 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
    new BigDecimal("5000"),new BigDecimal("75000"),true,"DEMO CUSTOMER","ZA");
   var decision=service.assess(r); var history=service.find(decision.applicationId());
   assertThat(history.applicationId()).isEqualTo(decision.applicationId());
-  assertThat(history.ruleSetVersion()).isEqualTo("0.3.0"); assertThat(history.decidedAt()).isNotNull();
+  assertThat(history.ruleSetVersion()).isEqualTo("0.4.0"); assertThat(history.decidedAt()).isNotNull();
  }
 }
