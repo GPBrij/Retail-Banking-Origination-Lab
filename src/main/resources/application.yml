@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: retail-banking-origination-lab
+  datasource:
+    url: jdbc:h2:mem:origination;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+server:
+  port: 8090
